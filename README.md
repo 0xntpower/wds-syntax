@@ -1,6 +1,8 @@
 ![VSCode](https://img.shields.io/badge/VSCode-1.74%2B-007ACC?logo=visual-studio-code&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+<img width="128" height="128" alt="icon-128" src="https://github.com/user-attachments/assets/d4b48324-6941-4467-bafc-ce64716561ba" />
+
 # WDS Script Syntax
 
 WinDbg script support for `.wds` files with syntax highlighting, smart indentation, and snippets for reverse engineering and exploit development.
