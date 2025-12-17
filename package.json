@@ -1,0 +1,54 @@
+{
+    "name": "wds-syntax",
+    "displayName": "WDS Script Syntax",
+    "description": "WinDbg script syntax highlighting for vulnerability research and exploit development",
+    "version": "1.0.0",
+    "publisher": "ntpower",
+    "icon": "icon.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xntpower/wds-syntax"
+    },
+    "engines": {
+        "vscode": "^1.74.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "keywords": [
+        "windbg",
+        "debugging",
+        "exploit development",
+        "vulnerability research",
+        "reverse engineering"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "wds",
+                "aliases": [
+                    "WDS",
+                    "wds",
+                    "WinDbg Script"
+                ],
+                "extensions": [
+                    ".wds"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "wds",
+                "scopeName": "source.wds",
+                "path": "./syntaxes/wds.tmLanguage.json"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "wds",
+                "path": "./snippets/wds.json"
+            }
+        ]
+    }
+}

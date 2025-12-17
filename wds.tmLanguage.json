@@ -1,0 +1,292 @@
+{
+    "scopeName": "source.wds",
+    "name": "WDS",
+    "patterns": [
+        { "include": "#comments" },
+        { "include": "#dot-commands" },
+        { "include": "#extension-commands" },
+        { "include": "#debugger-commands" },
+        { "include": "#expression-evaluators" },
+        { "include": "#pseudo-registers" },
+        { "include": "#registers" },
+        { "include": "#strings" },
+        { "include": "#numbers" },
+        { "include": "#operators" },
+        { "include": "#keywords" }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [
+                {
+                    "name": "comment.line.dollar-dollar.wds",
+                    "begin": "\\$\\$",
+                    "end": "$"
+                },
+                {
+                    "name": "comment.line.asterisk.wds",
+                    "match": "^\\s*\\*.*$"
+                },
+                {
+                    "name": "comment.block.wds",
+                    "begin": "\\$\\*",
+                    "end": "\\*\\$"
+                }
+            ]
+        },
+        "dot-commands": {
+            "patterns": [
+                {
+                    "name": "keyword.control.wds",
+                    "match": "\\.(block|for|if|else|elsif|foreach|while|do|break|continue|catch|leave)\\b"
+                },
+                {
+                    "name": "support.function.wds",
+                    "match": "\\.(printf|echo|echot|print|logopen|logclose|logappend)\\b"
+                },
+                {
+                    "name": "support.function.wds",
+                    "match": "\\.(expr|formats|enable_unicode|enable_long_status)\\b"
+                },
+                {
+                    "name": "support.function.wds",
+                    "match": "\\.(frame|reload|sympath|srcpath|lsrcpath|srcnoisy)\\b"
+                },
+                {
+                    "name": "support.function.wds",
+                    "match": "\\.(time|wtitle|remote|server|endsrv)\\b"
+                },
+                {
+                    "name": "support.function.wds",
+                    "match": "\\.(detach|kill|restart|quit|attach|process_server|remote_exit)\\b"
+                }
+            ]
+        },
+        "extension-commands": {
+            "patterns": [
+                {
+                    "name": "support.function.wds",
+                    "match": "\\!(analyze|address|pool|locks|irql|dml_start|dml_end)\\b"
+                },
+                {
+                    "name": "support.function.wds",
+                    "match": "\\!(for_each_module|for_each_frame|for_each_register)\\b"
+                },
+                {
+                    "name": "support.function.wds",
+                    "match": "\\!(peb|teb|vadump|address|process|thread|handle)\\b"
+                },
+                {
+                    "name": "support.function.wds",
+                    "match": "\\!(devnode|devstack|drvobj|object|poolfind)\\b"
+                },
+                {
+                    "name": "support.function.wds",
+                    "match": "\\!(lmi|dlls|uniqstack|stacks|error|exr|cxr|trap)\\b"
+                }
+            ]
+        },
+        "debugger-commands": {
+            "patterns": [
+                {
+                    "name": "keyword.control.wds",
+                    "match": "\\b(g|gh|gn|t|p|pa|ta|pc|tc|pt|tt|gu|wt)\\b"
+                },
+                {
+                    "name": "support.function.wds",
+                    "match": "\\b(bp|ba|bu|bm|bd|be|bc|bl|br)\\b"
+                },
+                {
+                    "name": "support.function.wds",
+                    "match": "\\b([dDeEfFuU][aAbBcCdDpPqQwW]?|s[aAbBdDqQwW]?|e[aAbBdDpPqQwW])\\b"
+                },
+                {
+                    "name": "support.function.wds",
+                    "match": "\\b(k[bBcCdDfFnNpPvVL]?|lm[aDfklouvVm]*)\\b"
+                },
+                {
+                    "name": "support.function.wds",
+                    "match": "\\b(r|rm|dt|dv|x|ln|!|~|\\||\\?)\\b"
+                },
+                {
+                    "name": "support.function.wds",
+                    "match": "\\b(vertarget|version|vercommand)\\b"
+                }
+            ]
+        },
+        "expression-evaluators": {
+            "patterns": [
+                {
+                    "name": "meta.expression.cpp.wds",
+                    "begin": "@@C\\+\\+\\(",
+                    "end": "\\)",
+                    "patterns": [
+                        { "include": "#pseudo-registers" },
+                        { "include": "#registers" },
+                        { "include": "#numbers" },
+                        { "include": "#operators" }
+                    ]
+                },
+                {
+                    "name": "meta.expression.masm.wds",
+                    "begin": "@@masm\\(",
+                    "end": "\\)",
+                    "patterns": [
+                        { "include": "#pseudo-registers" },
+                        { "include": "#registers" },
+                        { "include": "#numbers" },
+                        { "include": "#operators" }
+                    ]
+                },
+                {
+                    "name": "meta.expression.default.wds",
+                    "begin": "@@\\(",
+                    "end": "\\)",
+                    "patterns": [
+                        { "include": "#pseudo-registers" },
+                        { "include": "#registers" },
+                        { "include": "#numbers" },
+                        { "include": "#operators" }
+                    ]
+                }
+            ]
+        },
+        "pseudo-registers": {
+            "patterns": [
+                {
+                    "name": "variable.other.pseudo-register.wds",
+                    "match": "\\$t([0-9]|1[0-9])\\b"
+                },
+                {
+                    "name": "variable.parameter.pseudo-register.wds",
+                    "match": "\\$arg[1-9][0-9]*\\b"
+                },
+                {
+                    "name": "variable.other.pseudo-register.wds",
+                    "match": "\\$(ip|ra|retreg|exentry|peb|teb|csp|thread|proc|tpid|tid)\\b"
+                },
+                {
+                    "name": "variable.other.pseudo-register.wds",
+                    "match": "\\$(ea|exp|evt|thread|proc|frame|dbgtime|callret|lastclrex)\\b"
+                }
+            ]
+        },
+        "registers": {
+            "patterns": [
+                {
+                    "name": "variable.language.register.x64.wds",
+                    "match": "\\b(rax|rbx|rcx|rdx|rsi|rdi|rbp|rsp|rip|r8|r9|r10|r11|r12|r13|r14|r15)\\b"
+                },
+                {
+                    "name": "variable.language.register.x86.wds",
+                    "match": "\\b(eax|ebx|ecx|edx|esi|edi|ebp|esp|eip)\\b"
+                },
+                {
+                    "name": "variable.language.register.x86-16.wds",
+                    "match": "\\b(ax|bx|cx|dx|si|di|bp|sp|ip)\\b"
+                },
+                {
+                    "name": "variable.language.register.x86-8.wds",
+                    "match": "\\b(al|ah|bl|bh|cl|ch|dl|dh)\\b"
+                },
+                {
+                    "name": "variable.language.register.x64-32.wds",
+                    "match": "\\b(r8d|r9d|r10d|r11d|r12d|r13d|r14d|r15d)\\b"
+                },
+                {
+                    "name": "variable.language.register.x64-16.wds",
+                    "match": "\\b(r8w|r9w|r10w|r11w|r12w|r13w|r14w|r15w)\\b"
+                },
+                {
+                    "name": "variable.language.register.x64-8.wds",
+                    "match": "\\b(r8b|r9b|r10b|r11b|r12b|r13b|r14b|r15b)\\b"
+                },
+                {
+                    "name": "variable.language.register.segment.wds",
+                    "match": "\\b(cs|ds|es|fs|gs|ss)\\b"
+                },
+                {
+                    "name": "variable.language.register.xmm.wds",
+                    "match": "\\b(xmm[0-9]|xmm1[0-5])\\b"
+                },
+                {
+                    "name": "variable.language.register.ymm.wds",
+                    "match": "\\b(ymm[0-9]|ymm1[0-5])\\b"
+                }
+            ]
+        },
+        "strings": {
+            "patterns": [
+                {
+                    "name": "string.quoted.double.wds",
+                    "begin": "\"",
+                    "end": "\"",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.wds",
+                            "match": "\\\\."
+                        }
+                    ]
+                },
+                {
+                    "name": "string.quoted.single.wds",
+                    "begin": "'",
+                    "end": "'",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.wds",
+                            "match": "\\\\."
+                        }
+                    ]
+                }
+            ]
+        },
+        "numbers": {
+            "patterns": [
+                {
+                    "name": "constant.numeric.hex.wds",
+                    "match": "\\b0[xX][0-9a-fA-F]+\\b"
+                },
+                {
+                    "name": "constant.numeric.hex.backtick.wds",
+                    "match": "`[0-9a-fA-F]+\\b"
+                },
+                {
+                    "name": "constant.numeric.decimal.wds",
+                    "match": "\\b([0-9]+\\.)?[0-9]+(n|L)?\\b"
+                }
+            ]
+        },
+        "operators": {
+            "patterns": [
+                {
+                    "name": "keyword.operator.assignment.wds",
+                    "match": "\\b(r|rm)\\s+"
+                },
+                {
+                    "name": "keyword.operator.comparison.wds",
+                    "match": "(==|!=|<=|>=|<|>)"
+                },
+                {
+                    "name": "keyword.operator.logical.wds",
+                    "match": "(&&|\\|\\||!)"
+                },
+                {
+                    "name": "keyword.operator.arithmetic.wds",
+                    "match": "(\\+|-|\\*|/|%|<<|>>|&|\\||\\^|~)"
+                },
+                {
+                    "name": "keyword.operator.dereference.wds",
+                    "match": "(poi|wo|dwo|qwo|by|@@)"
+                }
+            ]
+        },
+        "keywords": {
+            "patterns": [
+                {
+                    "name": "keyword.control.wds",
+                    "match": "\\b(not|and|or|xor)\\b"
+                }
+            ]
+        }
+    }
+}
