@@ -10,44 +10,13 @@ WinDbg script support for `.wds` files with syntax highlighting, smart indentati
 ## Features
 
 - Complete WinDbg script syntax highlighting
+- WinDbg compliant auto-indent for control flow blocks
 - Dot command recognition (`.block`, `.for`, `.if`, `.foreach`)
 - Pseudo-register support (`$t0-$t19`, `$arg1-$argN`)
 - Full x86/x64 register highlighting
 - Expression evaluator syntax (`@@C++()`, `@@masm()`)
 - Memory search command patterns
-- Smart indentation for control flow blocks
 - 30+ code snippets for common exploit dev tasks
-
-### Snippets
-
-**ROP Gadget Search:**
-- `rop` - Configurable ROP gadget search with badchar filtering
-- `gadget_pop` - Find POP reg; RET sequences
-- `gadget_add_esp` - Find ADD ESP, value; RET
-- `gadget_jmp` - Find JMP/CALL register gadgets
-- `pivot` - Stack pivot gadget search
-
-**Module Analysis:**
-- `aslr` - Check ASLR status for all modules
-- `dep` - Check DEP/NX for all modules
-- `safeseh` - Check SafeSEH for all modules
-- `modinfo` - Comprehensive module protection analysis
-
-**Memory & Analysis:**
-- `search` - Pattern search in memory
-- `searchstr` / `searchuni` - String search (ASCII/Unicode)
-- `writable` - Find writable memory regions
-- `stack` / `heap` - Stack/heap analysis
-- `seh` - SEH chain dump and disassembly
-
-**Exploit Dev Helpers:**
-- `bp_cond` - Conditional breakpoint
-- `ba` - Hardware breakpoint
-- `vprotect` - VirtualProtect ROP setup
-- `badchar` - Badchar checking loop
-- `pattern` / `offset` - Pattern generation/offset finding
-
-And many more - type a snippet prefix and press Tab to expand.
 
 ## Usage
 
@@ -57,22 +26,14 @@ Create files with `.wds` extension and write your WinDbg scripts. Execute in Win
 $$>< script.wds
 ```
 
-### Script Formatting
-
-WinDbg handles both formatted and compact scripts equally. This extension provides smart indentation for readability:
-
-```windbg
-.block
-{
-    .for (r $t0 = 0x58; @$t0 < 0x5F; r $t0 = @$t0 + 0x01)
-    {
-        .if (@@C++(@$t0 != 0x5C))
-        {
-            s-[1]b ${$arg1} ${$arg2} $t0 0xC3
-        }
-    }
-}
+Type a snippet prefix and press **Tab** to expand:
 ```
+rop<Tab>      → ROP gadget search with badchar filtering
+aslr<Tab>     → Check ASLR for all modules  
+pivot<Tab>    → Stack pivot gadget search
+```
+
+See [SNIPPETS.md](SNIPPETS.md) for the full list.
 
 Press Enter after `{` to auto-indent. Type `}` to auto-dedent.
 
@@ -89,3 +50,7 @@ Then restart VSCode.
 ```bash
 code --install-extension wds-syntax-1.0.0.vsix
 ```
+
+## License
+
+MIT
