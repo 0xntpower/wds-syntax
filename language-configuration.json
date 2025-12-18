@@ -22,9 +22,15 @@
         ["\"", "\""],
         ["'", "'"]
     ],
+    "folding": {
+        "markers": {
+            "start": "^\\s*\\.block\\s*\\{|^\\s*\\.(for|if|foreach|while|do)\\s*.*\\{\\s*$",
+            "end": "^\\s*\\}\\s*$"
+        }
+    },
     "wordPattern": "(-?\\d*\\.\\d\\w*)|([^\\`\\~\\!\\#\\%\\^\\&\\*\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s]+)",
     "indentationRules": {
-        "increaseIndentPattern": "^\\s*\\.block\\s*\\{|^\\s*\\.for\\s*\\(.*\\)\\s*\\{|^\\s*\\.if\\s*\\(.*\\)\\s*\\{|^\\s*\\.else\\s*\\{|^\\s*\\.foreach\\s*\\(.*\\)\\s*\\{|^\\s*\\.while\\s*\\(.*\\)\\s*\\{|^\\s*\\.do\\s*\\{",
+        "increaseIndentPattern": "^\\s*\\.(block|for|if|else|elsif|foreach|while|do)\\b.*\\{\\s*$",
         "decreaseIndentPattern": "^\\s*\\}\\s*$"
     },
     "onEnterRules": [
@@ -47,9 +53,40 @@
             }
         },
         {
+            "beforeText": "^\\s*\\.else\\s*\\{\\s*$",
+            "action": {
+                "indent": "indent"
+            }
+        },
+        {
+            "beforeText": "^\\s*\\.elsif\\s*\\(.*\\)\\s*\\{\\s*$",
+            "action": {
+                "indent": "indent"
+            }
+        },
+        {
             "beforeText": "^\\s*\\.foreach\\s*\\(.*\\)\\s*\\{\\s*$",
             "action": {
                 "indent": "indent"
+            }
+        },
+        {
+            "beforeText": "^\\s*\\.while\\s*\\(.*\\)\\s*\\{\\s*$",
+            "action": {
+                "indent": "indent"
+            }
+        },
+        {
+            "beforeText": "^\\s*\\.do\\s*\\{\\s*$",
+            "action": {
+                "indent": "indent"
+            }
+        },
+        {
+            "beforeText": ".*\\{\\s*$",
+            "afterText": "^\\s*\\}",
+            "action": {
+                "indent": "indentOutdent"
             }
         }
     ]

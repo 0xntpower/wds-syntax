@@ -5,13 +5,13 @@
             "$$ Search for single-byte ROP gadgets (e.g., RET, RETN)",
             ".block",
             "{",
-            "\t.for (r \\$t0 = 0x${1:58}; @\\$t0 < 0x${2:5F}; r \\$t0 = \\$t0 + 0x01)",
+            "\t.for (r \\$t0 = 0x${1:58}; @\\$t0 < 0x${2:5F}; r \\$t0 = @\\$t0 + 0x01)",
             "\t{",
-            "\t\t.for (r \\$t1 = 0x${3:58}; @\\$t1 < 0x${4:5F}; r \\$t1 = \\$t1 + 0x01)",
+            "\t\t.for (r \\$t1 = 0x${3:58}; @\\$t1 < 0x${4:5F}; r \\$t1 = @\\$t1 + 0x01)",
             "\t\t{",
             "\t\t\t.if (@@C++(((@\\$t0 != ${5:0x5C}) && (@\\$t1 != ${6:0x5C}))))",
             "\t\t\t{",
-            "\t\t\t\ts-[1]b \\${\\$arg1} \\${\\$arg2} \\$t0 \\$t1 ${7:0xC3}",
+            "\t\t\t\ts-[1]b \\${\\$arg1} \\${\\$arg2} @\\$t0 @\\$t1 ${7:0xC3}",
             "\t\t\t}",
             "\t\t}",
             "\t}",
@@ -19,31 +19,64 @@
         ],
         "description": "Search for ROP gadgets with badchar filtering"
     },
-    "ROP Gadget Search - POP RET": {
+    "ROP Gadget Search - POP RET x86": {
         "prefix": "gadget_pop",
         "body": [
-            "$$ Find POP r32; RET gadgets",
-            "s-[1]b ${1:start_addr} ${2:end_addr} ${3:0x58} 0xC3",
-            "s-[1]b ${1:start_addr} ${2:end_addr} ${3:0x59} 0xC3",
-            "s-[1]b ${1:start_addr} ${2:end_addr} ${3:0x5A} 0xC3",
-            "s-[1]b ${1:start_addr} ${2:end_addr} ${3:0x5B} 0xC3",
-            "s-[1]b ${1:start_addr} ${2:end_addr} ${3:0x5C} 0xC3",
-            "s-[1]b ${1:start_addr} ${2:end_addr} ${3:0x5D} 0xC3",
-            "s-[1]b ${1:start_addr} ${2:end_addr} ${3:0x5E} 0xC3",
-            "s-[1]b ${1:start_addr} ${2:end_addr} ${3:0x5F} 0xC3$0"
+            "$$ Find POP r32; RET gadgets (x86)",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x58 0xC3 $$ POP EAX; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x59 0xC3 $$ POP ECX; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x5A 0xC3 $$ POP EDX; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x5B 0xC3 $$ POP EBX; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x5D 0xC3 $$ POP EBP; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x5E 0xC3 $$ POP ESI; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x5F 0xC3 $$ POP EDI; RET$0"
         ],
-        "description": "Search for POP reg; RET gadgets"
+        "description": "Search for x86 POP reg; RET gadgets"
+    },
+    "ROP Gadget Search - POP RET x64": {
+        "prefix": "gadget_pop64",
+        "body": [
+            "$$ Find POP r64; RET gadgets (x64)",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x58 0xC3 $$ POP RAX; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x59 0xC3 $$ POP RCX; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x5A 0xC3 $$ POP RDX; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x5B 0xC3 $$ POP RBX; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x41 0x58 0xC3 $$ POP R8; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x41 0x59 0xC3 $$ POP R9; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x41 0x5A 0xC3 $$ POP R10; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x41 0x5B 0xC3 $$ POP R11; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x41 0x5C 0xC3 $$ POP R12; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x41 0x5D 0xC3 $$ POP R13; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x41 0x5E 0xC3 $$ POP R14; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x41 0x5F 0xC3 $$ POP R15; RET$0"
+        ],
+        "description": "Search for x64 POP reg; RET gadgets"
     },
     "ROP Gadget Search - ADD ESP": {
         "prefix": "gadget_add_esp",
         "body": [
             "$$ Find ADD ESP, value; RET gadgets",
-            ".foreach (f {s-[1]b ${1:start_addr} ${2:end_addr} 0x81 0xC4})",
+            ".foreach (addr {s-[1]b ${1:start_addr} ${2:end_addr} 0x81 0xC4})",
             "{",
-            "\tu f L4",
+            "\tu addr L4",
             "}$0"
         ],
         "description": "Search for ADD ESP, imm32; RET gadgets"
+    },
+    "ROP Gadget Search - ADD RSP x64": {
+        "prefix": "gadget_add_rsp",
+        "body": [
+            "$$ Find ADD RSP, value; RET gadgets (x64)",
+            ".foreach (addr {s-[1]b ${1:start_addr} ${2:end_addr} 0x48 0x81 0xC4})",
+            "{",
+            "\tu addr L5",
+            "}",
+            ".foreach (addr {s-[1]b ${1:start_addr} ${2:end_addr} 0x48 0x83 0xC4})",
+            "{",
+            "\tu addr L4",
+            "}$0"
+        ],
+        "description": "Search for x64 ADD RSP gadgets"
     },
     "ROP Gadget Search - JMP REG": {
         "prefix": "gadget_jmp",
@@ -54,43 +87,69 @@
             "s-[1]b ${1:start_addr} ${2:end_addr} 0xFF 0xE1 $$ JMP ECX",
             "s-[1]b ${1:start_addr} ${2:end_addr} 0xFF 0xE2 $$ JMP EDX",
             "s-[1]b ${1:start_addr} ${2:end_addr} 0xFF 0xE4 $$ JMP ESP",
-            "s-[1]b ${1:start_addr} ${2:end_addr} 0xFF 0xE5 $$ JMP EBP",
             "s-[1]b ${1:start_addr} ${2:end_addr} 0xFF 0xE6 $$ JMP ESI",
-            "s-[1]b ${1:start_addr} ${2:end_addr} 0xFF 0xE7 $$ JMP EDI$0"
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0xFF 0xE7 $$ JMP EDI",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0xFF 0xD0 $$ CALL EAX",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0xFF 0xD4 $$ CALL ESP$0"
         ],
         "description": "Search for JMP/CALL register gadgets"
     },
     "Module ASLR Check": {
         "prefix": "aslr",
         "body": [
-            "$$ Check ASLR/Rebase for all loaded modules",
-            "!for_each_module \".if(wo(dwo(\\${@#Base}+0x3c)+\\${@#Base}+46+18) & 0x40) { .echo \\\"\\${@#ModuleName}: ASLR\\\" } .else { .echo \\\"\\${@#ModuleName}: NO ASLR\\\" }\"$0"
+            "$$ Check ASLR/Rebase for all loaded modules (PE32)",
+            "$$ DllCharacteristics offset: PE + 0x5E (x86) or PE + 0x6E (x64)",
+            "$$ IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE = 0x40",
+            "!for_each_module \".if(wo(dwo(\\${@#Base}+0x3c)+\\${@#Base}+0x5E) & 0x40) { .printf \\\"%-20s ASLR: YES\\\\n\\\", \\\"\\${@#ModuleName}\\\" } .else { .printf \\\"%-20s ASLR: NO  ***\\\\n\\\", \\\"\\${@#ModuleName}\\\" }\"$0"
         ],
-        "description": "Check which modules have ASLR enabled"
+        "description": "Check which modules have ASLR enabled (x86)"
+    },
+    "Module ASLR Check x64": {
+        "prefix": "aslr64",
+        "body": [
+            "$$ Check ASLR/Rebase for all loaded modules (PE32+)",
+            "$$ DllCharacteristics offset: PE + 0x6E for x64",
+            "!for_each_module \".if(wo(dwo(\\${@#Base}+0x3c)+\\${@#Base}+0x6E) & 0x40) { .printf \\\"%-20s ASLR: YES\\\\n\\\", \\\"\\${@#ModuleName}\\\" } .else { .printf \\\"%-20s ASLR: NO  ***\\\\n\\\", \\\"\\${@#ModuleName}\\\" }\"$0"
+        ],
+        "description": "Check which modules have ASLR enabled (x64)"
     },
     "Module DEP Check": {
         "prefix": "dep",
         "body": [
-            "$$ Check DEP/NX for all loaded modules",
-            "!for_each_module \".if(wo(dwo(\\${@#Base}+0x3c)+\\${@#Base}+46+70) & 0x100) { .echo \\\"\\${@#ModuleName}: DEP\\\" } .else { .echo \\\"\\${@#ModuleName}: NO DEP\\\" }\"$0"
+            "$$ Check DEP/NX compatibility for modules",
+            "$$ IMAGE_DLLCHARACTERISTICS_NX_COMPAT = 0x100",
+            "!for_each_module \".if(wo(dwo(\\${@#Base}+0x3c)+\\${@#Base}+0x5E) & 0x100) { .printf \\\"%-20s DEP: YES\\\\n\\\", \\\"\\${@#ModuleName}\\\" } .else { .printf \\\"%-20s DEP: NO  ***\\\\n\\\", \\\"\\${@#ModuleName}\\\" }\"$0"
         ],
-        "description": "Check which modules have DEP enabled"
+        "description": "Check which modules have DEP compatibility"
     },
     "Module SafeSEH Check": {
         "prefix": "safeseh",
         "body": [
-            "$$ Check SafeSEH for all loaded modules",
-            "!for_each_module \".if(wo(dwo(\\${@#Base}+0x3c)+\\${@#Base}+46+5C) != 0) { .echo \\\"\\${@#ModuleName}: SafeSEH\\\" } .else { .echo \\\"\\${@#ModuleName}: NO SafeSEH\\\" }\"$0"
+            "$$ Check SafeSEH for loaded modules",
+            "$$ Load Config Directory present = SafeSEH likely enabled",
+            "!for_each_module \".if(dwo(dwo(\\${@#Base}+0x3c)+\\${@#Base}+0xC8) != 0) { .printf \\\"%-20s SafeSEH: YES\\\\n\\\", \\\"\\${@#ModuleName}\\\" } .else { .printf \\\"%-20s SafeSEH: NO  ***\\\\n\\\", \\\"\\${@#ModuleName}\\\" }\"$0"
         ],
-        "description": "Check which modules have SafeSEH enabled"
+        "description": "Check which modules have SafeSEH"
     },
     "Module Full Analysis": {
         "prefix": "modinfo",
         "body": [
-            "$$ Full module protection analysis",
-            "!for_each_module \".echo \\\"Module: \\${@#ModuleName}\\\"; .echo \\\"Base: \\${@#Base}\\\"; .if(wo(dwo(\\${@#Base}+0x3c)+\\${@#Base}+46+18) & 0x40) { .echo \\\"  ASLR: Yes\\\" } .else { .echo \\\"  ASLR: No\\\" }; .if(wo(dwo(\\${@#Base}+0x3c)+\\${@#Base}+46+70) & 0x100) { .echo \\\"  DEP: Yes\\\" } .else { .echo \\\"  DEP: No\\\" }; .echo \\\"\\\"\"$0"
+            "$$ Comprehensive module protection analysis",
+            ".printf \"\\n%-20s %-8s %-8s %-10s %-12s\\n\", \"Module\", \"ASLR\", \"DEP\", \"SafeSEH\", \"Base\"",
+            ".printf \"%-20s %-8s %-8s %-10s %-12s\\n\", \"------\", \"----\", \"---\", \"-------\", \"----\"",
+            "!for_each_module \".block { r \\$t0 = wo(dwo(\\${@#Base}+0x3c)+\\${@#Base}+0x5E); r \\$t1 = dwo(dwo(\\${@#Base}+0x3c)+\\${@#Base}+0xC8); .printf \\\"%-20s\\\", \\\"\\${@#ModuleName}\\\"; .if(@\\$t0 & 0x40) { .printf \\\"%-8s\\\", \\\"Yes\\\" } .else { .printf \\\"%-8s\\\", \\\"NO\\\" }; .if(@\\$t0 & 0x100) { .printf \\\"%-8s\\\", \\\"Yes\\\" } .else { .printf \\\"%-8s\\\", \\\"NO\\\" }; .if(@\\$t1 != 0) { .printf \\\"%-10s\\\", \\\"Yes\\\" } .else { .printf \\\"%-10s\\\", \\\"NO\\\" }; .printf \\\"0x%p\\\\n\\\", \\${@#Base} }\"$0"
         ],
-        "description": "Comprehensive module protection analysis"
+        "description": "Table format module protection analysis"
+    },
+    "Find Non-ASLR Modules": {
+        "prefix": "noaslr",
+        "body": [
+            "$$ Find modules without ASLR - good for ROP gadgets",
+            ".printf \"\\nModules without ASLR:\\n\"",
+            ".printf \"=====================\\n\"",
+            "!for_each_module \".if(!(wo(dwo(\\${@#Base}+0x3c)+\\${@#Base}+0x5E) & 0x40)) { .printf \\\"%-20s Base: 0x%p  Size: 0x%x\\\\n\\\", \\\"\\${@#ModuleName}\\\", \\${@#Base}, \\${@#Size} }\"$0"
+        ],
+        "description": "List all non-ASLR modules for ROP chain building"
     },
     "Breakpoint on Module Load": {
         "prefix": "bp_load",
@@ -105,14 +164,22 @@
         "prefix": "bp_cond",
         "body": [
             "$$ Conditional breakpoint",
-            "bp ${1:address} \".if (@${2:register} == ${3:value}) { .echo \\\"Hit!\\\"; } .else { gc; }\"$0"
+            "bp ${1:address} \".if (@${2:eax} == ${3:0x41414141}) { .echo \\\"Condition hit!\\\"; } .else { gc }\"$0"
         ],
         "description": "Breakpoint with condition"
+    },
+    "Conditional Breakpoint - Log and Continue": {
+        "prefix": "bp_log",
+        "body": [
+            "$$ Log values and continue",
+            "bp ${1:address} \".printf \\\"Hit: EAX=0x%x EBX=0x%x ECX=0x%x\\\\n\\\", @eax, @ebx, @ecx; gc\"$0"
+        ],
+        "description": "Breakpoint that logs and continues"
     },
     "Hardware Breakpoint": {
         "prefix": "ba",
         "body": [
-            "$$ Hardware breakpoint on access",
+            "$$ Hardware breakpoint on ${1|read,write,execute|}",
             "ba ${1|r,w,e|}${2|1,2,4,8|} ${3:address}$0"
         ],
         "description": "Set hardware breakpoint"
@@ -120,19 +187,23 @@
     "Stack Analysis": {
         "prefix": "stack",
         "body": [
-            "$$ Analyze stack frame",
+            "$$ Analyze current stack frame",
+            ".echo \"=== Call Stack ===\"",
             "k",
-            "dps @esp L${1:20}",
-            "!for_each_frame \"dv\"$0"
+            ".echo \"\\n=== Stack Contents ===\"",
+            "dps @${1|esp,rsp|} L${2:20}",
+            ".echo \"\\n=== Local Variables ===\"",
+            "dv$0"
         ],
         "description": "Comprehensive stack analysis"
     },
     "Heap Chunk Analysis": {
         "prefix": "heap",
         "body": [
-            "$$ Analyze heap chunk",
+            "$$ Analyze heap at address",
+            ".echo \"=== Heap Info ===\"",
             "!heap -a ${1:address}",
-            "dt _HEAP ${1:address}",
+            ".echo \"\\n=== Memory Region ===\"",
             "!address ${1:address}$0"
         ],
         "description": "Heap chunk and metadata analysis"
@@ -141,15 +212,15 @@
         "prefix": "search",
         "body": [
             "$$ Search for byte pattern",
-            "s-[1]b ${1:start_addr} ${2:end_addr} ${3:pattern}$0"
+            "s-[1]b ${1:start_addr} ${2:end_addr} ${3:41 41 41 41}$0"
         ],
         "description": "Search memory for byte pattern"
     },
     "Find String in Memory": {
         "prefix": "searchstr",
         "body": [
-            "$$ Search for string in memory",
-            "s-[1]a ${1:start_addr} ${2:end_addr} \"${3:string}\"$0"
+            "$$ Search for ASCII string",
+            "s-a ${1:start_addr} ${2:end_addr} \"${3:string}\"$0"
         ],
         "description": "Search memory for ASCII string"
     },
@@ -157,17 +228,29 @@
         "prefix": "searchuni",
         "body": [
             "$$ Search for Unicode string",
-            "s-[1]u ${1:start_addr} ${2:end_addr} \"${3:string}\"$0"
+            "s-u ${1:start_addr} ${2:end_addr} \"${3:string}\"$0"
         ],
         "description": "Search memory for Unicode string"
+    },
+    "Find DWORD Value": {
+        "prefix": "searchdword",
+        "body": [
+            "$$ Search for DWORD value",
+            "s-d ${1:start_addr} ${2:end_addr} ${3:0x41414141}$0"
+        ],
+        "description": "Search memory for DWORD value"
     },
     "Exception Analysis": {
         "prefix": "except",
         "body": [
-            "$$ Exception record analysis",
+            "$$ Full exception analysis",
+            ".echo \"=== Exception Record ===\"",
             ".exr -1",
+            ".echo \"\\n=== Context Record ===\"",
             ".cxr",
+            ".echo \"\\n=== Stack Trace ===\"",
             "k",
+            ".echo \"\\n=== Detailed Analysis ===\"",
             "!analyze -v$0"
         ],
         "description": "Analyze exception and context"
@@ -175,44 +258,51 @@
     "SEH Chain Dump": {
         "prefix": "seh",
         "body": [
-            "$$ Dump SEH chain",
+            "$$ Dump and analyze SEH chain",
+            ".echo \"=== SEH Chain ===\"",
             "!exchain",
-            ".foreach (seh {!exchain})",
-            "{",
-            "\tu poi(seh+4) L2",
-            "}$0"
+            ".echo \"\\n=== SEH Handler Disassembly ===\"",
+            "dt ntdll!_EXCEPTION_REGISTRATION_RECORD @${1|fs:[0],gs:[0]|}$0"
         ],
-        "description": "Dump and disassemble SEH handlers"
+        "description": "Dump SEH chain and handlers"
     },
     "Find Writable Memory": {
         "prefix": "writable",
         "body": [
             "$$ Find writable memory regions",
+            ".echo \"=== PAGE_READWRITE Regions ===\"",
             "!address -f:PAGE_READWRITE",
+            ".echo \"\\n=== PAGE_EXECUTE_READWRITE Regions (RWX) ===\"",
             "!address -f:PAGE_EXECUTE_READWRITE$0"
         ],
         "description": "Find writable memory regions"
     },
-    "Control Flow Analysis": {
-        "prefix": "cfg",
+    "Find Executable Memory": {
+        "prefix": "executable",
         "body": [
-            "$$ Trace control flow",
-            "wt -l ${1:1} -oa ${2:address}$0"
+            "$$ Find executable memory regions",
+            "!address -f:PAGE_EXECUTE",
+            "!address -f:PAGE_EXECUTE_READ",
+            "!address -f:PAGE_EXECUTE_READWRITE",
+            "!address -f:PAGE_EXECUTE_WRITECOPY$0"
         ],
-        "description": "Trace control flow from address"
+        "description": "Find all executable memory regions"
     },
     "Badchar Check Loop": {
         "prefix": "badchar",
         "body": [
-            "$$ Check for badchars in address range",
+            "$$ Check for bad characters in memory range",
             ".block",
             "{",
+            "\t$$ Define badchars to check",
+            "\tr \\$t9 = ${3:0x00}",
+            "\t",
             "\tr \\$t0 = ${1:start_addr}",
             "\t.while (@\\$t0 < ${2:end_addr})",
             "\t{",
-            "\t\t.if (by(@\\$t0) == ${3:0x00})",
+            "\t\t.if (by(@\\$t0) == @\\$t9)",
             "\t\t{",
-            "\t\t\t.echo \"Badchar at: \"; ? @\\$t0",
+            "\t\t\t.printf \\\"Badchar 0x%02x found at: 0x%p\\\\n\\\", @\\$t9, @\\$t0",
             "\t\t}",
             "\t\tr \\$t0 = @\\$t0 + 1",
             "\t}",
@@ -220,19 +310,43 @@
         ],
         "description": "Check for bad characters in memory range"
     },
+    "Badchar Full Test": {
+        "prefix": "badchar_full",
+        "body": [
+            "$$ Verify all characters 0x01-0xFF in buffer",
+            "$$ Assumes buffer starts with 0x01 0x02 0x03...",
+            ".block",
+            "{",
+            "\tr \\$t0 = ${1:buffer_addr}",
+            "\tr \\$t1 = 0x01",
+            "\t.while (@\\$t1 < 0x100)",
+            "\t{",
+            "\t\t.if (by(@\\$t0) != @\\$t1)",
+            "\t\t{",
+            "\t\t\t.printf \\\"Badchar detected: expected 0x%02x at 0x%p, got 0x%02x\\\\n\\\", @\\$t1, @\\$t0, by(@\\$t0)",
+            "\t\t}",
+            "\t\tr \\$t0 = @\\$t0 + 1",
+            "\t\tr \\$t1 = @\\$t1 + 1",
+            "\t}",
+            "\t.echo \\\"Badchar check complete\\\"",
+            "}$0"
+        ],
+        "description": "Full 0x01-0xFF badchar verification"
+    },
     "Calculate Distance": {
         "prefix": "distance",
         "body": [
-            "$$ Calculate distance between addresses",
-            "? ${1:addr2} - ${2:addr1}$0"
+            "$$ Calculate offset between addresses",
+            "? ${1:target_addr} - ${2:source_addr}$0"
         ],
         "description": "Calculate offset between two addresses"
     },
-    "Memory Protection": {
+    "Memory Protection Info": {
         "prefix": "protect",
         "body": [
-            "$$ Check memory protection",
-            "!address ${1:address}$0"
+            "$$ Display memory protection info",
+            "!address ${1:address}",
+            "!vprot ${1:address}$0"
         ],
         "description": "Display memory protection info"
     },
@@ -241,95 +355,166 @@
         "body": [
             "$$ Resolve symbol or address",
             "ln ${1:address}",
-            "x ${2:module}!${3:symbol}$0"
+            "x ${2:kernel32}!${3:*VirtualProtect*}$0"
         ],
         "description": "Resolve symbols and addresses"
     },
     "Data Structure": {
         "prefix": "struct",
         "body": [
-            "$$ Display structure",
-            "dt ${1:module}!${2:structure} ${3:address}$0"
+            "$$ Display data structure",
+            "dt ${1:ntdll}!${2:_PEB} ${3:@peb}$0"
         ],
         "description": "Display data structure"
     },
     "Disassemble Function": {
         "prefix": "func",
         "body": [
-            "$$ Disassemble function",
+            "$$ Disassemble entire function",
             "uf ${1:address}$0"
         ],
         "description": "Unassemble entire function"
     },
-    "Log Analysis Session": {
+    "Disassemble Range": {
+        "prefix": "disasm",
+        "body": [
+            "$$ Disassemble N instructions",
+            "u ${1:address} L${2:20}$0"
+        ],
+        "description": "Disassemble specific number of instructions"
+    },
+    "Log Session": {
         "prefix": "log",
         "body": [
             "$$ Start logging session",
-            ".logopen ${1:output.log}",
-            "${2:commands}",
-            ".logclose$0"
+            ".logopen ${1:C:\\\\debug_output.log}",
+            "${0:$$ Commands here}",
+            "$$ .logclose"
         ],
         "description": "Log commands and output to file"
     },
     "Pattern Create": {
         "prefix": "pattern",
         "body": [
-            "$$ Generate cyclic pattern (use !pattern_create in mona)",
+            "$$ Generate simple cyclic pattern",
+            "$$ For better patterns, use: !py mona pattern_create ${1:500}",
             ".block",
             "{",
-            "\tr \\$t0 = 0",
-            "\tr \\$t1 = 0x41414141",
-            "\t.while (@\\$t0 < ${1:1000})",
+            "\tr \\$t0 = ${2:buffer_addr}",
+            "\tr \\$t1 = 0x41",
+            "\tr \\$t2 = 0",
+            "\t.while (@\\$t2 < ${1:500})",
             "\t{",
-            "\t\teb @\\$sp+@\\$t0 @\\$t1",
-            "\t\tr \\$t1 = @\\$t1 + 0x01010101",
-            "\t\tr \\$t0 = @\\$t0 + 4",
+            "\t\teb @\\$t0+@\\$t2 @\\$t1",
+            "\t\tr \\$t1 = @\\$t1 + 1",
+            "\t\t.if (@\\$t1 > 0x5A) { r \\$t1 = 0x41 }",
+            "\t\tr \\$t2 = @\\$t2 + 1",
             "\t}",
             "}$0"
         ],
-        "description": "Generate cyclic pattern for offset finding"
+        "description": "Generate simple cyclic pattern"
     },
     "Offset Find": {
         "prefix": "offset",
         "body": [
-            "$$ Find offset in cyclic pattern",
-            "? ${1:value} - 0x41414141$0"
+            "$$ Calculate offset from pattern value",
+            "$$ For mona patterns: !py mona pattern_offset ${1:0x41414141}",
+            "? ${1:0x41414141} - 0x41414141$0"
         ],
         "description": "Calculate offset from pattern value"
     },
-    "VirtualProtect Setup": {
+    "VirtualProtect ROP Setup": {
         "prefix": "vprotect",
         "body": [
-            "$$ VirtualProtect() ROP chain helper",
-            "$$ kernel32!VirtualProtect: LPVOID lpAddress, SIZE_T dwSize, DWORD flNewProtect, PDWORD lpflOldProtect",
-            ".echo \"VirtualProtect parameters:\"",
-            ".echo \"  lpAddress: ${1:address}\"",
-            ".echo \"  dwSize: ${2:0x1000}\"",
-            ".echo \"  flNewProtect: 0x40 (PAGE_EXECUTE_READWRITE)\"",
-            ".echo \"  lpflOldProtect: ${3:writable_addr}\"$0"
+            "$$ VirtualProtect() ROP chain setup",
+            "$$ BOOL VirtualProtect(",
+            "$$   LPVOID lpAddress,      $$ Address to change - usually shellcode location",
+            "$$   SIZE_T dwSize,         $$ Size - 0x201 or larger",
+            "$$   DWORD  flNewProtect,   $$ 0x40 = PAGE_EXECUTE_READWRITE",
+            "$$   PDWORD lpflOldProtect  $$ Writable address for old protection",
+            "$$ );",
+            ".echo \"\\n=== Find VirtualProtect ===\"",
+            "x kernel32!VirtualProtect",
+            ".echo \"\\n=== Suggested Parameters ===\"",
+            ".printf \\\"lpAddress:      0x%p (shellcode location)\\\\n\\\", ${1:shellcode_addr}",
+            ".printf \\\"dwSize:         0x%x\\\\n\\\", ${2:0x201}",
+            ".echo \\\"flNewProtect:   0x40 (PAGE_EXECUTE_READWRITE)\\\"",
+            ".printf \\\"lpflOldProtect: 0x%p (writable addr)\\\\n\\\", ${3:writable_addr}$0"
         ],
         "description": "VirtualProtect ROP chain helper"
+    },
+    "VirtualAlloc ROP Setup": {
+        "prefix": "valloc",
+        "body": [
+            "$$ VirtualAlloc() ROP chain setup",
+            "$$ LPVOID VirtualAlloc(",
+            "$$   LPVOID lpAddress,      $$ NULL or specific address",
+            "$$   SIZE_T dwSize,         $$ Allocation size",
+            "$$   DWORD  flAllocationType,$$ 0x1000 = MEM_COMMIT",
+            "$$   DWORD  flProtect       $$ 0x40 = PAGE_EXECUTE_READWRITE",
+            "$$ );",
+            ".echo \"=== Find VirtualAlloc ===\"",
+            "x kernel32!VirtualAlloc",
+            ".echo \"\\n=== Suggested Parameters ===\"",
+            ".echo \\\"lpAddress:        NULL or target\\\"",
+            ".printf \\\"dwSize:           0x%x\\\\n\\\", ${1:0x1000}",
+            ".echo \\\"flAllocationType: 0x1000 (MEM_COMMIT)\\\"",
+            ".echo \\\"flProtect:        0x40 (PAGE_EXECUTE_READWRITE)\\\"$0"
+        ],
+        "description": "VirtualAlloc ROP chain helper"
+    },
+    "WriteProcessMemory ROP Setup": {
+        "prefix": "wpm",
+        "body": [
+            "$$ WriteProcessMemory() for copying shellcode",
+            "$$ BOOL WriteProcessMemory(",
+            "$$   HANDLE  hProcess,      $$ -1 (current process)",
+            "$$   LPVOID  lpBaseAddress, $$ Destination",
+            "$$   LPCVOID lpBuffer,      $$ Source (shellcode)",
+            "$$   SIZE_T  nSize,         $$ Size to copy",
+            "$$   SIZE_T  *lpNumberOfBytesWritten $$ Writable addr",
+            "$$ );",
+            ".echo \"=== Find WriteProcessMemory ===\"",
+            "x kernel32!WriteProcessMemory",
+            "x kernelbase!WriteProcessMemory$0"
+        ],
+        "description": "WriteProcessMemory ROP chain helper"
     },
     "Stack Pivot": {
         "prefix": "pivot",
         "body": [
             "$$ Find stack pivot gadgets",
-            "s-[1]b ${1:start_addr} ${2:end_addr} 0x94 $$ XCHG EAX,ESP",
-            "s-[1]b ${1:start_addr} ${2:end_addr} 0x87 0xE0 $$ XCHG ESP,EAX",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x94 0xC3 $$ XCHG EAX,ESP; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x87 0xE4 0xC3 $$ XCHG ESP,EAX; RET",
             "s-[1]b ${1:start_addr} ${2:end_addr} 0x8B 0xE0 $$ MOV ESP,EAX",
-            "s-[1]b ${1:start_addr} ${2:end_addr} 0x8B 0x24 0x24 $$ MOV ESP,[ESP]$0"
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x8B 0xE1 $$ MOV ESP,ECX",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x8B 0xE3 $$ MOV ESP,EBX",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x50 0xC4 $$ PUSH EAX; ... ADD ESP",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x5C 0xC3 $$ POP ESP; RET$0"
         ],
         "description": "Search for stack pivot gadgets"
+    },
+    "Stack Pivot x64": {
+        "prefix": "pivot64",
+        "body": [
+            "$$ Find x64 stack pivot gadgets",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x48 0x94 0xC3 $$ XCHG RAX,RSP; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x48 0x87 0xE4 0xC3 $$ XCHG RSP,RAX; RET",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x48 0x8B 0xE0 $$ MOV RSP,RAX",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x48 0x8B 0xE1 $$ MOV RSP,RCX",
+            "s-[1]b ${1:start_addr} ${2:end_addr} 0x5C 0xC3 $$ POP RSP; RET$0"
+        ],
+        "description": "Search for x64 stack pivot gadgets"
     },
     "Function Hook Detection": {
         "prefix": "hookdet",
         "body": [
-            "$$ Detect inline hooks",
-            ".foreach (func {x ${1:module}!*})",
+            "$$ Detect potential inline hooks",
+            ".foreach (addr {x ${1:ntdll}!Nt*})",
             "{",
-            "\t.if (by(func) == 0xE9 || by(func) == 0xE8)",
+            "\t.if ((by(addr) == 0xE9) || (by(addr) == 0xE8) || (by(addr) == 0xFF))",
             "\t{",
-            "\t\t.echo \"Potential hook at: \"; ln func; u func L5",
+            "\t\t.printf \\\"Potential hook at: \\\"; ln addr; u addr L3",
             "\t}",
             "}$0"
         ],
@@ -339,9 +524,102 @@
         "prefix": "iat",
         "body": [
             "$$ Analyze Import Address Table",
+            ".echo \"=== Module Headers ===\"",
             "!dh ${1:module} -f",
-            "dps ${2:iat_address} L${3:count}$0"
+            ".echo \"\\n=== IAT Entries ===\"",
+            "dps ${2:iat_address} L${3:20}$0"
         ],
         "description": "Analyze Import Address Table"
+    },
+    "EAT Analysis": {
+        "prefix": "eat",
+        "body": [
+            "$$ Analyze Export Address Table",
+            "x ${1:kernel32}!*",
+            "!dh ${1:kernel32} -f$0"
+        ],
+        "description": "Analyze Export Address Table"
+    },
+    "PEB Walk": {
+        "prefix": "peb",
+        "body": [
+            "$$ Walk PEB structure",
+            "dt ntdll!_PEB @\\$peb",
+            "dt ntdll!_PEB_LDR_DATA poi(@\\$peb+0xc)",
+            "!peb$0"
+        ],
+        "description": "Walk PEB and loaded modules"
+    },
+    "TEB Walk": {
+        "prefix": "teb",
+        "body": [
+            "$$ Walk TEB structure",
+            "dt ntdll!_TEB @\\$teb",
+            "!teb$0"
+        ],
+        "description": "Walk TEB structure"
+    },
+    "EggHunter Search Setup": {
+        "prefix": "egghunter",
+        "body": [
+            "$$ Verify egg placement for egghunter",
+            "$$ Common egg: w00tw00t (0x74303077)",
+            "s-d 0 L?80000000 ${1:0x74303077}",
+            ".echo \"\\nFound egg locations above\"$0"
+        ],
+        "description": "Search for egghunter marker"
+    },
+    "Shellcode Dump": {
+        "prefix": "shellcode_dump",
+        "body": [
+            "$$ Dump memory as shellcode bytes",
+            ".printf \"unsigned char shellcode[] = {\\n\"",
+            ".for (r \\$t0 = 0; @\\$t0 < ${2:100}; r \\$t0 = @\\$t0 + 1)",
+            "{",
+            "\t.if ((@\\$t0 % 16) == 0) { .printf \\\"\\\\n\\\" }",
+            "\t.printf \\\"0x%02x, \\\", by(${1:address}+@\\$t0)",
+            "}",
+            ".printf \"\\n};\\n\"$0"
+        ],
+        "description": "Dump memory region as C shellcode array"
+    },
+    "Compare Memory": {
+        "prefix": "memcmp",
+        "body": [
+            "$$ Compare two memory regions",
+            ".block",
+            "{",
+            "\tr \\$t0 = 0",
+            "\tr \\$t9 = 0",
+            "\t.while (@\\$t0 < ${3:100})",
+            "\t{",
+            "\t\t.if (by(${1:addr1}+@\\$t0) != by(${2:addr2}+@\\$t0))",
+            "\t\t{",
+            "\t\t\t.printf \\\"Diff at offset 0x%x: 0x%02x vs 0x%02x\\\\n\\\", @\\$t0, by(${1:addr1}+@\\$t0), by(${2:addr2}+@\\$t0)",
+            "\t\t\tr \\$t9 = @\\$t9 + 1",
+            "\t\t}",
+            "\t\tr \\$t0 = @\\$t0 + 1",
+            "\t}",
+            "\t.printf \\\"Total differences: %d\\\\n\\\", @\\$t9",
+            "}$0"
+        ],
+        "description": "Compare two memory regions byte by byte"
+    },
+    "Crash Analysis Quick": {
+        "prefix": "crash",
+        "body": [
+            "$$ Quick crash analysis",
+            ".echo \"=== Crash Analysis ===\"",
+            "r",
+            ".echo \"\\n=== Exception ===\"",
+            ".exr -1",
+            ".echo \"\\n=== Faulting Instruction ===\"",
+            "u @${1|eip,rip|} L3",
+            ".echo \"\\n=== Stack ===\"",
+            "dps @${2|esp,rsp|} L10",
+            ".echo \"\\n=== Exploitability ===\"",
+            "!analyze -v$0"
+        ],
+        "description": "Quick crash triage"
     }
 }
