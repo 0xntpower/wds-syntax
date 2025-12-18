@@ -36,8 +36,8 @@
         "dot-commands": {
             "patterns": [
                 {
-                    "name": "keyword.control.flow.wds",
-                    "match": "\\.(block|for|if|else|elsif|foreach|while|do|break|continue|catch|leave)\\b"
+                    "name": "keyword.control.wds",
+                    "match": "(?<=^|\\s)\\.(block|for|if|else|elsif|foreach|while|do|break|continue|catch|leave)(?=\\s|\\(|\\{|$)"
                 },
                 {
                     "name": "support.function.output.wds",
