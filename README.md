@@ -7,7 +7,7 @@
 
 WinDbg script support for `.wds` files with syntax highlighting, smart indentation, and snippets for reverse engineering and exploit development.
 
-<img width="1659" height="603" alt="syntax_highlighting" src="https://github.com/user-attachments/assets/6094f71c-8148-4f03-8be9-d8ab94c4302d" />
+<img src="https://github.com/user-attachments/assets/6094f71c-8148-4f03-8be9-d8ab94c4302d" alt="Syntax Highlighting Comparison" width="100%" />
 
 ## Features
 
