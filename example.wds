@@ -1,4 +1,6 @@
-$$ modified to avoid POP ESP
+$$ POP R32, POP R32, RET gadget search
+$$ Modified to avoid POP ESP (0x5C)
+$$ Usage: $$>a< script.wds start_addr end_addr
 .block
 {
         .for (r $t0 = 0x58; $t0 < 0x5F; r $t0 = $t0 + 0x01)
