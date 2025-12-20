@@ -26,6 +26,10 @@ Create files with `.wds` extension and write your WinDbg scripts. Execute in Win
 
 ```
 $$>< script.wds
+
+or if script takes arguments:
+
+$$>a< script.wds
 ```
 
 Type a snippet prefix and press **Tab** to expand:
